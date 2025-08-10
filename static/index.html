@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Scheduler</title>
+</head>
+<body>
+    <h1>Task Scheduler</h1>
+    
+    <div>
+        <h2>Create Task</h2>
+        <input type="text" id="taskName" placeholder="Task name">
+        <input type="datetime-local" id="scheduledTime">
+        <button onclick="createTask()">Create</button>
+    </div>
+    
+    <div>
+        <h2>Tasks</h2>
+        <button onclick="loadTasks()">Refresh</button>
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        async function createTask() {
+            const name = document.getElementById('taskName').value;
+            const scheduledTime = document.getElementById('scheduledTime').value + ':00Z';
+            
+            const response = await fetch('/api/tasks', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, scheduled_time: scheduledTime})
+            });
+            
+            if (response.ok) {
+                loadTasks();
+                document.getElementById('taskName').value = '';
+                document.getElementById('scheduledTime').value = '';
+            }
+        }
+        
+        async function loadTasks() {
+            const response = await fetch('/api/tasks');
+            const tasks = await response.json();
+            
+            const list = document.getElementById('taskList');
+            list.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.textContent = `${task.name} - ${task.scheduled_time} - ${task.status}`;
+                list.appendChild(li);
+            });
+        }
+        
+        loadTasks();
+    </script>
+</body>
+</html>
