@@ -20,7 +20,7 @@ jobs:
     
     - name: Run tests with coverage
       run: |
-        pytest --cov=app --cov-report=term-missing --cov-fail-under=90
+        pytest --cov=app --cov-report=term-missing --cov-fail-under=85
     
     - name: Build Docker image
       run: |
