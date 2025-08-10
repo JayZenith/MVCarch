@@ -1,27 +1,30 @@
 name: CI
+# GitHub Actions workflow for CI. defines automated process
+# that runs when code pushed or pull request created
 
 on: [push, pull_request]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  test: #single job named test 
+    runs-on: ubuntu-latest #running on ubuntu-latest vm
     
-    steps:
-    - uses: actions/checkout@v3
+    steps: #series of steps for test
+    - uses: actions/checkout@v3 #check out project's code from repo into runners env
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v4 #set up Py 3.11 env
       with:
         python-version: '3.11'
     
-    - name: Install dependencies
+    - name: Install dependencies 
       run: |
-        pip install -r requirements.txt
+        pip install -r requirements.txt 
     
-    - name: Run tests with coverage
+    - name: Run tests with coverage #Crucial for CI. Executes test_app.py
       run: |
         pytest --cov=app --cov-report=term-missing --cov-fail-under=85
     
-    - name: Build Docker image
+    - name: Build Docker image #After tests pass, use Dockefile 
       run: |
-        docker build -t task-scheduler .
+        docker build -t task-scheduler . 
+      # Image is tagged as task-schedular

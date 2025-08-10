@@ -12,6 +12,7 @@ from app.controllers import TaskController
 from app.views import create_app
 from app.container import Container
 
+# Uses pytest and a Mockobject to test components in iso
 class TestTask:
     def test_task_creation(self):
         task = Task("1", "Test", datetime.now())
@@ -48,12 +49,16 @@ class TestTaskRepository:
         all_tasks = repo.find_all()
         assert len(all_tasks) == 2
 
+# Mock testing to simulate TaskRepository to focus on controller
+# logic w/o actual repo instance or db
 class TestTaskController:
     def test_create_task(self, mocker):
-        mock_repo = Mock()
+        mock_repo = Mock() #Mock object
         mock_task = Mock()
         mock_task.to_dict.return_value = {"id": "1", "name": "Test"}
         mock_repo.save.return_value = mock_task
+        # save method configured to return a mock Task object
+        # ensuring test dosent depend on real TaskRepository
         
         controller = TaskController(mock_repo)
         result = controller.create_task("Test", "2024-01-01T12:00:00")
@@ -94,3 +99,27 @@ class TestViews:
         response = client.get('/api/tasks')
         assert response.status_code == 200
         assert isinstance(response.json, list)
+
+    # Integration Test 
+    def test_full_create_and_retrieve_flow(self, client):
+        """
+        Tests the complete workflow of creating a task via the API and then
+        retrieving it. This verifies the integration of the view, controller,
+        and repository.
+        """
+        create_response = client.post('/api/tasks', 
+            json={'name': 'Integration Test Task', 'scheduled_time': '2025-08-09T18:00:00Z'})
+        
+        assert create_response.status_code == 201
+        created_task = create_response.json
+        task_id = created_task['id']
+        
+        get_response = client.get(f'/api/tasks/{task_id}')
+        
+        assert get_response.status_code == 200
+        retrieved_task = get_response.json
+        
+        assert retrieved_task['name'] == 'Integration Test Task'
+        assert retrieved_task['id'] == task_id
+
+

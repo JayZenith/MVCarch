@@ -3,6 +3,9 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from .models import Task, TaskRepository
 
+
+# Takes TaskRepository as dependency to perform ops 
+# like creating, retreiving, and listing tasks 
 class TaskController:
     def __init__(self, task_repository: TaskRepository):
         self._repository = task_repository

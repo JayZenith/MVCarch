@@ -2,10 +2,15 @@ from flask import Flask, request, jsonify, send_from_directory
 from .container import Container
 import os
 
+
+# Flask routes (endpoints) and uses TaskController 
+# to handle them. Ex) /api/tasks with POST calls create_task
+# on te controller 
 def create_app(container: Container) -> Flask:
     app = Flask(__name__)
     app.container = container
     
+    # Serves the frontend index.html file 
     @app.route('/')
     def index():
         return send_from_directory('../static', 'index.html')

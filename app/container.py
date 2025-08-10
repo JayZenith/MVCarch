@@ -1,6 +1,10 @@
 from .models import TaskRepository
 from .controllers import TaskController
 
+# Manages dependencies, creating single instance of 
+# TaskRepository(MODEL) and TaskController(CONTROLLER)
+# and provides them to other parts of application, following
+# dependency injection pattern
 class Container:
     def __init__(self):
         self._task_repository = None
